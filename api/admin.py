@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import Shipping
-# from .models import NewUser
+from .models import Profile
+#from .models import Shipping
 
 # Register your models here.
 
-admin.site.register(Shipping)
+admin.site.register(Profile)
+#admin.site.register(Shipping)
