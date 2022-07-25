@@ -8,20 +8,20 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = (
-            'id', 'user', 'email', 'user_type', 'name', 'phone_number', 'cpf', 'cnpj', 'fantasy_name', 'address',
-            'area')
+            'id', 'name', 'user', 'email', 'user_type', 'name', 'phone_number', 'cpf', 'cnpj', 'fantasy_name',
+            'address', 'area', 'profile_pic', 'number_of_ratings', 'avg_rating')
 
 
 class VehicleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
-        fields = ('id', 'user', 'vehicle_plate', 'vehicle_model', 'vehicle_category', 'vehicle_fuel')
+        fields = ('id', 'user', 'vehicle_license_plate', 'vehicle_model', 'vehicle_category', 'vehicle_color')
 
 
 class DocumentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Documents
-        fields = ('id', 'user', 'document_type')
+        fields = ('id', 'user', 'document_type', 'document_image')
 
 
 class AuctionSerializer(serializers.ModelSerializer):
@@ -41,7 +41,6 @@ class ShippingSerializer(serializers.ModelSerializer):
 #         model = Movie
 #         fields = ('id', 'title', 'description', 'number_of_ratings', 'avg_rating')
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -53,8 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
         token = Token.objects.create(user=user)
         return user
 
-
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ('id', 'user', 'stars')
+        fields = ('id', 'profile_evaluator', 'profile_evaluated', 'shipping', 'comment', 'stars')

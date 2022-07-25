@@ -4,6 +4,11 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from rest_framework import viewsets, status
+
+
+def update_profile_pic(instance, filename):
+    return f"profile_pic/{instance.id}-{filename}"
 
 
 class Profile(models.Model):
@@ -13,6 +18,7 @@ class Profile(models.Model):
         ('PF', 'Pessoa Física'),
         ('PJ', 'Pessoa Jurídica'),
     )
+
     user_type = models.CharField(
         max_length=2,
         choices=TYPE_CHOICES,
@@ -28,19 +34,21 @@ class Profile(models.Model):
     address = models.CharField(max_length=256, blank=True)
     area = models.IntegerField(unique=True, blank=True, null=True)
 
-    # def number_of_ratings(self):
-    #     ratings = Rating.objects.filter(Profile=self)
-    #     return len(ratings)
-    #
-    # def avg_rating(self):
-    #     sum = 0
-    #     ratings = Rating.objects.filter(Profile=self)
-    #     for rating in ratings:
-    #         sum += rating.stars
-    #     if len(ratings) > 0:
-    #         return sum / len(ratings)
-    #     else:
-    #         return 0
+    profile_pic = models.ImageField(upload_to=update_profile_pic, blank=True, null=True)
+
+    def number_of_ratings(self):
+        ratings = Rating.objects.filter(profile_evaluated=self)
+        return len(ratings)
+
+    def avg_rating(self):
+        sum = 0
+        ratings = Rating.objects.filter(profile_evaluated=self)
+        for rating in ratings:
+            sum += rating.stars
+        if len(ratings) > 0:
+            return sum / len(ratings)
+        else:
+            return -1  # -1 indica que o usuário não possui avaliações
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
@@ -59,52 +67,39 @@ class Vehicle(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     TYPE_CATEGORY = (
         ('Simples', 'Simples'),
+        ('Pesado', 'Pesado'),
         ('Perecível', 'Perecível'),
         ('Alto Valor', 'Alto Valor'),
         ('Frágil', 'Frágil'),
         ('Perigosa', 'Perigosa'),  # Add more shipping types later and review the current
     )
-    TYPE_FUEL = (
-        ('Flex', 'Flex'),
-        ('Disel', 'Disel'),
-        ('Alcool', 'Alcool'),
-        ('Gasolina', 'Gasolina'),
-        ('Eletrico', 'Eletrico'),
-    )
-    vehicle_plate = models.CharField(max_length=20, blank=True, unique=True)
+    vehicle_license_plate = models.CharField(max_length=20, blank=True, unique=True)
     vehicle_model = models.CharField(max_length=30, blank=True)
     vehicle_category = models.CharField(max_length=20, choices=TYPE_CATEGORY, default='Flex')
-    vehicle_document = models.CharField(max_length=20, blank=True, unique=True)
-    vehicle_renavam = models.CharField(max_length=20, blank=True, unique=True)
-    vehicle_chassi = models.CharField(max_length=20, blank=True, unique=True)
-    vehicle_fuel = models.CharField(max_length=20, choices=TYPE_FUEL, default='Simples')
-    vehicle_license = models.CharField(max_length=30, blank=True)
     vehicle_color = models.CharField(max_length=30, blank=True)
-    model_year = models.IntegerField(blank=True, null=True)
-    manufacture_year = models.IntegerField(blank=True, null=True)
+
+    # vehicle_document_number = models.CharField(max_length=20, blank=True, unique=True)
 
     def __str__(self):
-        return self.vehicle_plate
+        return f"{self.vehicle_license_plate} by {self.user}"
 
+
+def update_document_pic(instance, filename):
+    return f"documents/{instance.id}-{filename}"
 
 class Documents(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     TYPE_DOCUMENT = (
         ('RG', 'RG'),
         ('CNH', 'CNH'),
+        ('CRV', 'CRV'),
+        ('CRLV', 'CRLV'),  # (Insert Other Types)
     )
     document_type = models.CharField(max_length=20, choices=TYPE_DOCUMENT, default='')
-    # document_image = models.ImageField(upload_to='')
-
-
-class Auction(models.Model):
-    user_who_offered = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_who_offered', default='')
-    user_who_demanded = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_who_demanded', default='')
-    bid = models.IntegerField(blank=True, null=True)
-    deadline = models.DateTimeField(null=True)
+    document_image = models.ImageField(upload_to=update_document_pic, null=True, blank=True)
 
     def __str__(self):
-        return 'Leilão ' + str(self.id)
+        return str(self.user)
 
 
 class Shipping(models.Model):
@@ -113,7 +108,8 @@ class Shipping(models.Model):
     user_posted = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_posted', default='')
     user_transporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transporter', default='')
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)  # Veículo que vai transportar a carga
-    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, null=True)  # Leilão criado
+    # auction = models.ForeignKey(Auction, on_delete=models.CASCADE, null=True)  # Leilão criado
+    at_auction = models.BooleanField()
 
     TYPE_SHIPPING = (
         ('Simples', 'Simples'),
@@ -141,7 +137,6 @@ class Shipping(models.Model):
     opening_bid = models.IntegerField(blank=True, null=True)
 
     # load_value (...) Use Choice
-    at_auction = models.BooleanField()
 
     # def posted_by(self):
     #     user_posted = User.objects.filter(user=self)
@@ -152,32 +147,37 @@ class Shipping(models.Model):
         index_together = (('user_posted', 'user_transporter'),)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} posted by {self.user_posted}"
 
 
-# class Movie(models.Model):
-#     title = models.CharField(max_length=32)
-#     description = models.TextField(max_length=360)
-#
-#     def number_of_ratings(self):
-#         ratings = Rating.objects.filter(movie=self)
-#         return len(ratings)
-#
-#     def avg_rating(self):
-#         sum = 0
-#         ratings = Rating.objects.filter(movie=self)
-#         for rating in ratings:
-#             sum += rating.stars
-#         if len(ratings) > 0:
-#             return sum / len(ratings)
-#         else:
-#             return 0
+class Auction(models.Model):
+    # user_who_offered = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_who_offered', default='')
+    user_who_demanded = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_who_demanded', default='')
+    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE, default='')
+    bid = models.IntegerField()
+    deadline = models.DateTimeField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Lance {self.id} referente ao frete {self.shipping.title}"
 
 class Rating(models.Model):
-    # Profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    profile_evaluator = models.ForeignKey(Profile, related_name='profile_evaluator', on_delete=models.CASCADE)
+    profile_evaluated = models.ForeignKey(Profile, related_name='profile_evaluated', on_delete=models.CASCADE)
+    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE, default='')
+
+    comment = models.TextField(blank=True, null=True)
     stars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+
+    def __str__(self):
+        return f"Rating {self.id} from {self.profile_evaluator} to {self.profile_evaluated} "
 
     # class Meta:
     #     unique_together = (('user'),)
     #     index_together = (('user'),)
+
+# class Chat(models.Model):
+#     user1 = models.ForeignKey(User, related_name='user1', on_delete=models.CASCADE)
+#     user2 = models.ForeignKey(User, related_name='user2', on_delete=models.CASCADE)
+#
+#     # Chat_File  = models.FileField(null=True, blank = True, upload_to="images/")

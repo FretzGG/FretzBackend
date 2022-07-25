@@ -6,14 +6,12 @@ from .views import RatingViewSet, ProfileViewSet, UserViewSet,VehicleViewSet, Sh
 
 router = routers.DefaultRouter()
 
-
 router.register('users', UserViewSet)
-router.register('ratings', RatingViewSet)
 router.register('profile', ProfileViewSet)
 router.register('vehicle', VehicleViewSet)
 router.register('shipping', ShippingViewSet)
 router.register('documents', DocumentsViewSet)
-
+router.register('ratings', RatingViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

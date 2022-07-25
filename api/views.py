@@ -24,7 +24,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
         user.profile.name = 'Joao'
         user.save()
 
-
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
@@ -39,8 +38,22 @@ class DocumentsViewSet(viewsets.ModelViewSet):
     queryset = Documents.objects.all()
     serializer_class = DocumentsSerializer
 
+class RatingViewSet(viewsets.ModelViewSet):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
 
-# Create your views here.
+    # authentication_classes = (TokenAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+
+    # def update(self, request, *args, **kwargs):
+    #     response = {'message': 'not able to update through this method'}
+    #     return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    #
+    # def create(self, request, *args, **kwargs):
+    #     response = {'message': 'not able to create through this method'}
+    #     return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
 # class MovieViewSet(viewsets.ModelViewSet):
 #     queryset = Movie.objects.all()
 #     serializer_class = MovieSerializer
@@ -72,17 +85,3 @@ class DocumentsViewSet(viewsets.ModelViewSet):
 #             response = {'message': 'missing stars'}
 #             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 #
-
-class RatingViewSet(viewsets.ModelViewSet):
-    queryset = Rating.objects.all()
-    serializer_class = RatingSerializer
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
-
-    def update(self, request, *args, **kwargs):
-        response = {'message': 'not able to update through this method'}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
-    def create(self, request, *args, **kwargs):
-        response = {'message': 'not able to create through this method'}
-        return Response(response, status=status.HTTP_400_BAD_REQUEST)
