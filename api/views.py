@@ -10,40 +10,59 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
+# Token 714903b38a102a0b5448d655e3cec9daf611b4dd
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
 
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
     def update_profile(request, user_id):
         user = User.objects.get(pk=user_id)
         user.profile.name = 'Joao'
         user.save()
 
+
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
 
 class ShippingViewSet(viewsets.ModelViewSet):
     queryset = Shipping.objects.all()
     serializer_class = ShippingSerializer
 
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (AllowAny,)
+
 
 class DocumentsViewSet(viewsets.ModelViewSet):
     queryset = Documents.objects.all()
     serializer_class = DocumentsSerializer
 
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
 
-    # authentication_classes = (TokenAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     # def update(self, request, *args, **kwargs):
     #     response = {'message': 'not able to update through this method'}
@@ -52,7 +71,6 @@ class RatingViewSet(viewsets.ModelViewSet):
     # def create(self, request, *args, **kwargs):
     #     response = {'message': 'not able to create through this method'}
     #     return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
 
 # class MovieViewSet(viewsets.ModelViewSet):
 #     queryset = Movie.objects.all()
