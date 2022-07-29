@@ -4,6 +4,8 @@ from .models import Rating, Profile, Vehicle, Shipping, Documents
 from .serializers import RatingSerializer, UserSerializer, ProfileSerializer, VehicleSerializer, \
     ShippingSerializer, DocumentsSerializer
 from rest_framework.response import Response
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
@@ -11,6 +13,13 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 # Token 714903b38a102a0b5448d655e3cec9daf611b4dd
+
+class CustomObtainAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
+        token = Token.objects.get(key=response.data['token'])
+        return Response({'token': token.key, 'id': token.user_id})
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

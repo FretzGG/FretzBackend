@@ -16,6 +16,7 @@ class Profile(models.Model):
 
     TYPE_CHOICES = (
         ('PF', 'Pessoa Física'),
+        ('PT', 'Pessoa Transportadora'),
         ('PJ', 'Pessoa Jurídica'),
     )
 
@@ -86,6 +87,7 @@ class Vehicle(models.Model):
 
 def update_document_pic(instance, filename):
     return f"documents/{instance.id}-{filename}"
+
 
 class Documents(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -160,6 +162,7 @@ class Auction(models.Model):
 
     def __str__(self):
         return f"Lance {self.id} referente ao frete {self.shipping.title}"
+
 
 class Rating(models.Model):
     profile_evaluator = models.ForeignKey(Profile, related_name='profile_evaluator', on_delete=models.CASCADE)
