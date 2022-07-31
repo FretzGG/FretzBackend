@@ -1,8 +1,8 @@
 from re import M
 from django.shortcuts import render
 from rest_framework import viewsets, status
-from .models import Rating, Profile, Vehicle, Shipping, Documents, Message
-from .serializers import RatingSerializer, UserSerializer, ProfileSerializer, VehicleSerializer, \
+from .models import Chat, Rating, Profile, Vehicle, Shipping, Documents, Message
+from .serializers import ChatSerializer, RatingSerializer, UserSerializer, ProfileSerializer, VehicleSerializer, \
     ShippingSerializer, DocumentsSerializer, MessageSerializer
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -113,6 +113,20 @@ class RatingViewSet(viewsets.ModelViewSet):
     #     response = {'message': 'not able to create through this method'}
     #     return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ChatViewSet(viewsets.ModelViewSet):
+    queryset = Chat.objects.all()
+    serializer_class = ChatSerializer
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    @action(detail=False, methods=['POST'])
+    def get_user_chats(self, request):
+        if 'user' in request.data:
+            chats = Chat.objects.filter(Q(user_one=request.data['user']) | Q(user_two=request.data['user']))
+            serializer = ChatSerializer(chats, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()

@@ -25,8 +25,8 @@ class Profile(models.Model):
         choices=TYPE_CHOICES,
         default='PF',
     )
-    name = models.CharField(max_length=100, blank=True)
-    email = models.EmailField(gettext_lazy('email address'), unique=True, null=True)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(gettext_lazy('email address'), unique=True, default='')
     is_email_verified = models.BooleanField(default=False)
     phone_number = models.IntegerField(unique=True, blank=True, null=True)
     cpf = models.IntegerField(unique=True, blank=True, null=True)
@@ -107,11 +107,13 @@ class Documents(models.Model):
 class Shipping(models.Model):
     title = models.CharField(max_length=100)
 
-    user_posted = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_posted', default='')
-    user_transporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transporter', default='')
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)  # Veículo que vai transportar a carga
+    user_posted = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_posted')
+    user_transporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transporter', blank=True,
+                                         null=True)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, blank=True,
+                                null=True)  # Veículo que vai transportar a carga
     # auction = models.ForeignKey(Auction, on_delete=models.CASCADE, null=True)  # Leilão criado
-    at_auction = models.BooleanField()
+    at_auction = models.BooleanField(default=True)
 
     TYPE_SHIPPING = (
         ('Simples', 'Simples'),
@@ -138,10 +140,10 @@ class Shipping(models.Model):
         default='Ativo',
     )
 
-    deadline = models.DateTimeField(null=True)
-    delivery_location = models.CharField(max_length=100, blank=True)
-    departure_location = models.CharField(max_length=100, blank=True)
-    distance = models.IntegerField(blank=True, null=True)  # In Km
+    deadline = models.DateField()
+    delivery_location = models.CharField(max_length=100)
+    departure_location = models.CharField(max_length=100)
+    # distance = models.IntegerField(blank=True, null=True)  # In Km
     post_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     load_specifications = models.TextField(blank=True)
     cargo_weight = models.IntegerField(blank=True, null=True)  # In Kg
@@ -149,12 +151,7 @@ class Shipping(models.Model):
     length = models.IntegerField(blank=True, null=True)  # In m
     height = models.IntegerField(blank=True, null=True)  # In m
     opening_bid = models.IntegerField(blank=True, null=True)
-
     # load_value (...) Use Choice
-
-    # def posted_by(self):
-    #     user_posted = User.objects.filter(user=self)
-    #     return user_posted
 
     class Meta:
         unique_together = (('user_posted', 'user_transporter'),)
@@ -192,8 +189,16 @@ class Rating(models.Model):
     #     unique_together = (('user'),)
     #     index_together = (('user'),)
 
+class Chat(models.Model):
+    user_one = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_one')
+    user_two = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_two')
+    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE, default='')
+
+    def __str__(self):
+        return f"Chat {self.id} between {self.user_one} and {self.user_two}"
 
 class Message(models.Model):
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, default='')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
     message = models.CharField(max_length=1200)
@@ -207,11 +212,3 @@ class Message(models.Model):
         ordering = ('timestamp',)
 
 
-# class Chat(models.Model):
-#     member1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
-#     member2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
-#
-#
-#
-#     def __str__(self):
-#         return self.member1

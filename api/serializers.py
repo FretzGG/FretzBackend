@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Rating, Profile, Vehicle, Shipping, Documents, Auction, Message
+from .models import Chat, Rating, Profile, Vehicle, Shipping, Documents, Auction, Message
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
@@ -64,6 +64,14 @@ class RatingSerializer(serializers.ModelSerializer):
         model = Rating
         fields = ('id', 'profile_evaluator', 'profile_evaluated', 'shipping', 'comment', 'stars', 'rating_date_time')
 
+
+class ChatSerializer(serializers.ModelSerializer):
+    user_one = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
+    user_two = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
+
+    class Meta:
+        model = Chat
+        fields = ['id', 'user_one', 'user_two', 'shipping']
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
