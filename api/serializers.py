@@ -33,7 +33,9 @@ class AuctionSerializer(serializers.ModelSerializer):
 class ShippingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shipping
-        fields = ('id', 'title', 'user_posted', 'user_transporter', 'shipping_type')
+        fields = ('id', 'title', 'user_posted', 'user_transporter', 'vehicle', \
+                  'at_auction', 'shipping_type', 'shipping_status', 'deadline', \
+                  'delivery_location', 'departure_location')
 
 
 # class MovieSerializer(serializers.ModelSerializer):

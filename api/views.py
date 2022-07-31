@@ -54,6 +54,15 @@ class VehicleViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    @action(detail=False, methods=['POST'])
+    def get_user_vehicle(self, request):
+        if 'user' in request.data:
+            vehicle = Vehicle.objects.filter(user=request.data['user'])
+            serializer = VehicleSerializer(vehicle, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'user': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ShippingViewSet(viewsets.ModelViewSet):
     queryset = Shipping.objects.all()
@@ -61,6 +70,15 @@ class ShippingViewSet(viewsets.ModelViewSet):
 
     authentication_classes = (TokenAuthentication,)
     permission_classes = (AllowAny,)
+
+    @action(detail=False, methods=['POST'])
+    def get_active_shippings(self, request):
+        if 'shipping_type' in request.data:
+            shippings = Shipping.objects.filter(shipping_type=request.data['shipping_type'])
+            serializer = ShippingSerializer(shippings, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'shipping_type': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DocumentsViewSet(viewsets.ModelViewSet):
