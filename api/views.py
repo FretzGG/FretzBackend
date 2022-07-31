@@ -1,3 +1,4 @@
+from re import M
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from .models import Rating, Profile, Vehicle, Shipping, Documents, Message
@@ -77,7 +78,7 @@ class RatingViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    @action(detail=False)
+    @action(detail=False, methods=['POST'])
     def get_user_ratings(self, request):
         if 'profile_evaluated' in request.data:
             ratings = Rating.objects.filter(profile_evaluated=request.data['profile_evaluated'])
@@ -102,7 +103,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    @action(detail=False)
+    @action(detail=False, methods=['POST'])
     def get_chat(self, request):
         if ('sender' in request.data) and ('receiver' in request.data):
 
