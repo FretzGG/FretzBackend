@@ -26,7 +26,7 @@ class Profile(models.Model):
         default='PF',
     )
     name = models.CharField(max_length=100)
-    email = models.EmailField(gettext_lazy('email address'), unique=True, default='')
+    email = models.EmailField(gettext_lazy('email address'), unique=True, null=True)
     is_email_verified = models.BooleanField(default=False)
     phone_number = models.IntegerField(unique=True, blank=True, null=True)
     cpf = models.IntegerField(unique=True, blank=True, null=True)
@@ -53,6 +53,7 @@ class Profile(models.Model):
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
+        print("Teste")
         if created:
             Profile.objects.create(user=instance)
 
@@ -109,13 +110,11 @@ class Shipping(models.Model):
 
     user_posted = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_posted')
     user_transporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transporter', blank=True,
-                                         null=True, default='')
+                                         null=True,  default=None)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, blank=True,
-                                null=True, default='')  # Veículo que vai transportar a carga
+                                null=True)  # Veículo que vai transportar a carga
     # auction = models.ForeignKey(Auction, on_delete=models.CASCADE, null=True)  # Leilão criado
     at_auction = models.BooleanField(default=True)
-
-    teste = models.BooleanField(default=True)
 
     TYPE_SHIPPING = (
         ('Simples', 'Simples'),
