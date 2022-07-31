@@ -76,7 +76,7 @@ class Vehicle(models.Model):
     )
     vehicle_license_plate = models.CharField(max_length=20, blank=True, unique=True)
     vehicle_model = models.CharField(max_length=30, blank=True)
-    vehicle_category = models.CharField(max_length=20, choices=TYPE_CATEGORY, default='Flex')
+    vehicle_category = models.CharField(max_length=20, choices=TYPE_CATEGORY, default='Simples')
     vehicle_color = models.CharField(max_length=30, blank=True)
 
     # vehicle_document_number = models.CharField(max_length=20, blank=True, unique=True)
@@ -85,8 +85,8 @@ class Vehicle(models.Model):
         return f"{self.vehicle_license_plate} by {self.user}"
 
 
-def update_document_pic(instance, filename):
-    return f"documents/{instance.id}-{filename}"
+def update_document_pic(self, filename):
+    return f"documents/{self.id}-{filename}"
 
 
 class Documents(models.Model):
@@ -109,11 +109,13 @@ class Shipping(models.Model):
 
     user_posted = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_posted')
     user_transporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transporter', blank=True,
-                                         null=True)
+                                         null=True, default='')
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, blank=True,
-                                null=True)  # Veículo que vai transportar a carga
+                                null=True, default='')  # Veículo que vai transportar a carga
     # auction = models.ForeignKey(Auction, on_delete=models.CASCADE, null=True)  # Leilão criado
     at_auction = models.BooleanField(default=True)
+
+    teste = models.BooleanField(default=True)
 
     TYPE_SHIPPING = (
         ('Simples', 'Simples'),
