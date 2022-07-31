@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework import routers
 from django.conf.urls import include
-from .views import RatingViewSet, ProfileViewSet, UserViewSet, VehicleViewSet, ShippingViewSet, DocumentsViewSet, \
+from .views import ChatViewSet, RatingViewSet, ProfileViewSet, UserViewSet, VehicleViewSet, ShippingViewSet, DocumentsViewSet, \
     MessageViewSet
 from . import views
 
@@ -14,6 +14,7 @@ router.register('vehicle', VehicleViewSet)
 router.register('shipping', ShippingViewSet)
 router.register('documents', DocumentsViewSet)
 router.register('ratings', RatingViewSet)
+router.register('chat', ChatViewSet)
 router.register('message', MessageViewSet)
 
 urlpatterns = [

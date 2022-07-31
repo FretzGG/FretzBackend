@@ -192,8 +192,16 @@ class Rating(models.Model):
     #     unique_together = (('user'),)
     #     index_together = (('user'),)
 
+class Chat(models.Model):
+    user_one = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_one')
+    user_two = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_two')
+    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE, default='')
+
+    def __str__(self):
+        return f"Chat {self.id} between {self.user_one} and {self.user_two}"
 
 class Message(models.Model):
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, default='')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
     message = models.CharField(max_length=1200)
