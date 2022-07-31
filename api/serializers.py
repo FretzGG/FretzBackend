@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Rating, Profile, Vehicle, Shipping, Documents, Auction
+from .models import Rating, Profile, Vehicle, Shipping, Documents, Auction, Message
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
@@ -49,10 +49,24 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
-        token = Token.objects.create(user=user)
+        # token = Token.objects.create(user=user)
         return user
 
+
 class RatingSerializer(serializers.ModelSerializer):
+
+    profile_evaluator = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
+    profile_evaluated = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
+
     class Meta:
         model = Rating
-        fields = ('id', 'profile_evaluator', 'profile_evaluated', 'shipping', 'comment', 'stars')
+        fields = ('id', 'profile_evaluator', 'profile_evaluated', 'shipping', 'comment', 'stars', 'rating_date_time')
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
+    receiver = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
+
+    class Meta:
+        model = Message
+        fields = ['id', 'sender', 'receiver', 'message', 'timestamp']

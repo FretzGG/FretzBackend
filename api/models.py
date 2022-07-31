@@ -126,6 +126,18 @@ class Shipping(models.Model):
         default='Simples',
     )
 
+    STATUS = (
+        ('Ativo', 'Ativo'),
+        ('Em Progresso', 'Em Progresso'),
+        ('Finalizado', 'Finalizado'),
+    )
+
+    shipping_status = models.CharField(
+        max_length=15,
+        choices=STATUS,
+        default='Ativo',
+    )
+
     deadline = models.DateTimeField(null=True)
     delivery_location = models.CharField(max_length=100, blank=True)
     departure_location = models.CharField(max_length=100, blank=True)
@@ -169,6 +181,7 @@ class Rating(models.Model):
     profile_evaluated = models.ForeignKey(Profile, related_name='profile_evaluated', on_delete=models.CASCADE)
     shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE, default='')
 
+    rating_date_time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     stars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
 
@@ -179,8 +192,26 @@ class Rating(models.Model):
     #     unique_together = (('user'),)
     #     index_together = (('user'),)
 
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
+    message = models.CharField(max_length=1200)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.message
+
+    class Meta:
+        ordering = ('timestamp',)
+
+
 # class Chat(models.Model):
-#     user1 = models.ForeignKey(User, related_name='user1', on_delete=models.CASCADE)
-#     user2 = models.ForeignKey(User, related_name='user2', on_delete=models.CASCADE)
+#     member1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+#     member2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
 #
-#     # Chat_File  = models.FileField(null=True, blank = True, upload_to="images/")
+#
+#
+#     def __str__(self):
+#         return self.member1
