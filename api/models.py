@@ -110,7 +110,7 @@ class Shipping(models.Model):
 
     user_posted = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_posted')
     user_transporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transporter', blank=True,
-                                         null=True,  default=None)
+                                         null=True, default=None)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, blank=True,
                                 null=True)  # Veículo que vai transportar a carga
     # auction = models.ForeignKey(Auction, on_delete=models.CASCADE, null=True)  # Leilão criado
@@ -121,7 +121,10 @@ class Shipping(models.Model):
         ('Perecível', 'Perecível'),
         ('Alto Valor', 'Alto Valor'),
         ('Frágil', 'Frágil'),
-        ('Perigosa', 'Perigosa'),  # Add more shipping types later and review the current
+        ('Perigosa', 'Perigosa'),
+        ('Pesado', 'Pesado'),
+        ('Refrigerada', 'Refrigerada')  # Add more shipping types later and review the current
+
     )
     shipping_type = models.CharField(
         max_length=15,
@@ -152,6 +155,7 @@ class Shipping(models.Model):
     length = models.IntegerField(blank=True, null=True)  # In m
     height = models.IntegerField(blank=True, null=True)  # In m
     opening_bid = models.IntegerField(blank=True, null=True)
+
     # load_value (...) Use Choice
 
     class Meta:
@@ -190,6 +194,7 @@ class Rating(models.Model):
     #     unique_together = (('user'),)
     #     index_together = (('user'),)
 
+
 class Chat(models.Model):
     user_one = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_one')
     user_two = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_two')
@@ -197,6 +202,7 @@ class Chat(models.Model):
 
     def __str__(self):
         return f"Chat {self.id} between {self.user_one} and {self.user_two}"
+
 
 class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, default='')
@@ -211,5 +217,3 @@ class Message(models.Model):
 
     class Meta:
         ordering = ('timestamp',)
-
-
