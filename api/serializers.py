@@ -66,16 +66,16 @@ class RatingSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    user_one = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
-    user_two = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
+    # user_one = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
+    # user_two = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
 
     class Meta:
         model = Chat
         fields = ['id', 'user_one', 'user_two', 'shipping']
 
 class MessageSerializer(serializers.ModelSerializer):
-    sender = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
-    receiver = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
+    # sender = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
+    # receiver = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
 
     class Meta:
         model = Message
