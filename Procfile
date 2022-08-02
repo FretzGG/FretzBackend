@@ -1,0 +1,1 @@
+web: gunicorn Fretz.wsgi --log-file -
