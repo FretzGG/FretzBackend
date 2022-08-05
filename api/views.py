@@ -141,10 +141,13 @@ class MessageViewSet(viewsets.ModelViewSet):
             messages = Message.objects.filter(chat=request.data['chat'])
             messages = messages.order_by('timestamp')
             serializer = MessageSerializer(messages, many=True)
-
-            for message in messages:
-                message.is_read = True
-                message.save()
+            
+            if messages:
+                user = User.objects.get(username=messages[0].receiver)
+                for message in messages:
+                    if request.data['user_receiver'] == user.id and message.is_read == False:
+                        message.is_read = True
+                        message.save()
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
