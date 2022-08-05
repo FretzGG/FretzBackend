@@ -137,7 +137,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['POST'])
     def get_chat(self, request):
-        if 'chat' in request.data:
+        if ('chat' in request.data) and ('user_receiver' in request.data):
             messages = Message.objects.filter(chat=request.data['chat'])
             messages = messages.order_by('timestamp')
             serializer = MessageSerializer(messages, many=True)
