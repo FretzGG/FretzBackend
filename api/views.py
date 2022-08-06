@@ -136,18 +136,28 @@ class MessageViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     @action(detail=False, methods=['POST'])
+    def get_unread_message_number(self, request):
+        if 'user' in request.data:
+            if 'chat' in request.data:
+                messages_number = Message.objects.filter(chat=request.data['chat'], receiver=request.data['user'], is_read=False).count()
+                return Response({'message_number': messages_number}, status=status.HTTP_200_OK)
+            messages_number = Message.objects.filter(receiver=request.data['user'], is_read=False).count()
+            return Response({'message_number': messages_number}, status=status.HTTP_200_OK)
+        else:
+            return Response({'user': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['POST'])
     def get_chat(self, request):
         if ('chat' in request.data) and ('user_receiver' in request.data):
             messages = Message.objects.filter(chat=request.data['chat'])
             messages = messages.order_by('timestamp')
             serializer = MessageSerializer(messages, many=True)
             
-            if messages:
-                user = User.objects.get(username=messages[0].receiver)
-                for message in messages:
-                    if request.data['user_receiver'] == user.id and message.is_read == False:
-                        message.is_read = True
-                        message.save()
+            for message in messages:
+                user = User.objects.get(username=message.receiver)
+                if request.data['user_receiver'] == user.id and message.is_read == False:
+                    message.is_read = True
+                    message.save()
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
