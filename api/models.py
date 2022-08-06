@@ -150,11 +150,11 @@ class Shipping(models.Model):
     # distance = models.IntegerField(blank=True, null=True)  # In Km
     post_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     load_specifications = models.TextField(blank=True)
-    cargo_weight = models.IntegerField(blank=True, null=True)  # In Kg
-    width = models.IntegerField(blank=True, null=True)  # In m
-    length = models.IntegerField(blank=True, null=True)  # In m
-    height = models.IntegerField(blank=True, null=True)  # In m
-    opening_bid = models.IntegerField(blank=True, null=True)
+    cargo_weight = models.FloatField(blank=True, null=True)  # In Kg
+    width = models.FloatField(blank=True, null=True)  # In m
+    length = models.FloatField(blank=True, null=True)  # In m
+    height = models.FloatField(blank=True, null=True)  # In m
+    opening_bid = models.FloatField(blank=True, null=True)
 
     # load_value (...) Use Choice
 
