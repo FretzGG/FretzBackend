@@ -72,9 +72,22 @@ class ShippingViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
 
     @action(detail=False, methods=['POST'])
+    def get_user_shippings(self, request):
+        if 'user_posted' in request.data:
+            shippings = Shipping.objects.filter(user_posted=request.data['user_posted'])
+            serializer = ShippingSerializer(shippings, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif 'user_transporter' in request.data:
+            shippings = Shipping.objects.filter(user_transporter=request.data['user_transporter'])
+            serializer = ShippingSerializer(shippings, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'shipping_type': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['POST'])
     def get_active_shippings(self, request):
         if 'shipping_type' in request.data:
-            shippings = Shipping.objects.filter(shipping_type=request.data['shipping_type'])
+            shippings = Shipping.objects.filter(shipping_type=request.data['shipping_type'], shipping_status='Ativo')
             serializer = ShippingSerializer(shippings, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
