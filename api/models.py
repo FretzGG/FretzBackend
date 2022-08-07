@@ -172,6 +172,7 @@ class Auction(models.Model):
     shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE)
     bid = models.FloatField()
     deadline = models.DateField()
+    is_read = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Lance {self.id} referente ao frete {self.shipping.title}"

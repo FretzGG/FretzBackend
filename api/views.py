@@ -101,10 +101,22 @@ class AuctionViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     @action(detail=False, methods=['POST'])
+    def get_unseen_offer_number(self, request):
+        if 'shipping' in request.data:
+            offer_number = Auction.objects.filter(shipping=request.data['shipping'], is_read=False).count()
+            return Response({'offer_number': offer_number}, status=status.HTTP_200_OK)
+        else:
+            return Response({'shipping': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['POST'])
     def get_shipping_auction(self, request):
         if 'shipping' in request.data:
-            auction = Auction.objects.filter(shipping=request.data['shipping'])
-            serializer = AuctionSerializer(auction, many=True)
+            auctions = Auction.objects.filter(shipping=request.data['shipping'])
+            serializer = AuctionSerializer(auctions, many=True)
+            for offer in auctions:
+                if offer.is_read == False:
+                    offer.is_read = True
+                    offer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'shipping': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
