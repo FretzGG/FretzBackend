@@ -168,12 +168,10 @@ class Shipping(models.Model):
 
 
 class Auction(models.Model):
-    # user_who_offered = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_who_offered', default='')
-    user_who_demanded = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_who_demanded', default='')
-    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE, default='')
-    bid = models.IntegerField()
-    deadline = models.DateTimeField(blank=True, null=True)
-    comment = models.TextField(blank=True, null=True)
+    user_who_offered = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_who_demanded')
+    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE)
+    bid = models.FloatField()
+    deadline = models.DateField()
 
     def __str__(self):
         return f"Lance {self.id} referente ao frete {self.shipping.title}"
@@ -199,7 +197,7 @@ class Rating(models.Model):
 class Chat(models.Model):
     user_one = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_one')
     user_two = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_two')
-    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE, default='')
+    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Chat {self.id} between {self.user_one} and {self.user_two}"

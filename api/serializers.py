@@ -27,7 +27,7 @@ class DocumentsSerializer(serializers.ModelSerializer):
 class AuctionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Auction
-        fields = ('id', 'user_who_offered', 'user_who_demanded', 'bid', 'deadline')
+        fields = ('id', 'shipping', 'user_who_offered', 'bid', 'deadline')
 
 
 class ShippingSerializer(serializers.ModelSerializer):

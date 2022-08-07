@@ -1,8 +1,8 @@
 from re import M
 from django.shortcuts import render
 from rest_framework import viewsets, status
-from .models import Chat, Rating, Profile, Vehicle, Shipping, Documents, Message
-from .serializers import ChatSerializer, RatingSerializer, UserSerializer, ProfileSerializer, VehicleSerializer, \
+from .models import Auction, Chat, Rating, Profile, Vehicle, Shipping, Documents, Message
+from .serializers import AuctionSerializer, ChatSerializer, RatingSerializer, UserSerializer, ProfileSerializer, VehicleSerializer, \
     ShippingSerializer, DocumentsSerializer, MessageSerializer
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -82,7 +82,7 @@ class ShippingViewSet(viewsets.ModelViewSet):
             serializer = ShippingSerializer(shippings, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response({'shipping_type': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'user_posted': 'Este campo é obrigatório', 'user_transporter': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['POST'])
     def get_active_shippings(self, request):
@@ -92,6 +92,31 @@ class ShippingViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'shipping_type': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+
+class AuctionViewSet(viewsets.ModelViewSet):
+    queryset = Auction.objects.all()
+    serializer_class = AuctionSerializer
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    @action(detail=False, methods=['POST'])
+    def get_shipping_auction(self, request):
+        if 'shipping' in request.data:
+            auction = Auction.objects.filter(shipping=request.data['shipping'])
+            serializer = AuctionSerializer(auction, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'shipping': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['POST'])
+    def get_user_shipping_bid(self, request):
+        if 'user_who_offered' in request.data and 'shipping' in request.data:
+            auctions = Auction.objects.filter(user_who_offered=request.data['user_who_offered'], shipping=request.data['shipping'])
+            serializer = AuctionSerializer(auctions, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'user': 'Este campo é obrigatório', 'shipping': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DocumentsViewSet(viewsets.ModelViewSet):
