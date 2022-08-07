@@ -69,11 +69,12 @@ class Vehicle(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     TYPE_CATEGORY = (
         ('Simples', 'Simples'),
-        ('Pesado', 'Pesado'),
         ('Perecível', 'Perecível'),
         ('Alto Valor', 'Alto Valor'),
         ('Frágil', 'Frágil'),
-        ('Perigosa', 'Perigosa'),  # Add more shipping types later and review the current
+        ('Perigosa', 'Perigosa'),
+        ('Pesado', 'Pesado'),
+        ('Refrigerada', 'Refrigerada')  # Add more shipping types later and review the current
     )
     vehicle_license_plate = models.CharField(max_length=20, blank=True, unique=True)
     vehicle_model = models.CharField(max_length=30, blank=True)
