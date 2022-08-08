@@ -27,15 +27,16 @@ class DocumentsSerializer(serializers.ModelSerializer):
 class AuctionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Auction
-        fields = ('id', 'user_who_offered', 'user_who_demanded', 'bid', 'deadline')
+        fields = ('id', 'shipping', 'user_who_offered', 'bid', 'deadline')
 
 
 class ShippingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shipping
-        fields = ('id', 'title', 'user_posted', 'user_transporter', 'vehicle', \
-                  'at_auction', 'shipping_type', 'shipping_status', 'deadline', \
-                  'delivery_location', 'departure_location')
+        fields = ('id', 'title', 'load_specifications', 'user_posted', 'user_transporter', \
+                    'vehicle', 'at_auction', 'shipping_type', 'shipping_status', 'deadline', \
+                    'delivery_location', 'departure_location', 'cargo_weight', 'width', 'length', \
+                    'height', 'opening_bid')
 
 
 # class MovieSerializer(serializers.ModelSerializer):
@@ -56,27 +57,17 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
-
-    profile_evaluator = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
-    profile_evaluated = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
-
     class Meta:
         model = Rating
-        fields = ('id', 'profile_evaluator', 'profile_evaluated', 'shipping', 'comment', 'stars', 'rating_date_time')
+        fields = ('id', 'profile_evaluator', 'profile_evaluated', 'shipping', 'comment', 'stars', 'date')
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    # user_one = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
-    # user_two = serializers.SlugRelatedField(many=False, slug_field='name', queryset=Profile.objects.all())
-
     class Meta:
         model = Chat
         fields = ['id', 'user_one', 'user_two', 'shipping']
 
 class MessageSerializer(serializers.ModelSerializer):
-    # sender = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
-    # receiver = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
-
     class Meta:
         model = Message
         fields = ['id', 'chat', 'sender', 'receiver', 'message', 'timestamp']
