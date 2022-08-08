@@ -14,7 +14,7 @@ router.register('vehicle', VehicleViewSet)
 router.register('shipping', ShippingViewSet)
 router.register('auction', AuctionViewSet)
 router.register('documents', DocumentsViewSet)
-router.register('ratings', RatingViewSet)
+router.register('rating', RatingViewSet)
 router.register('chat', ChatViewSet)
 router.register('message', MessageViewSet)
 

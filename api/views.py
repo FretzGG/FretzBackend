@@ -155,13 +155,14 @@ class RatingViewSet(viewsets.ModelViewSet):
         else:
             return Response({'profile_evaluated': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # def update(self, request, *args, **kwargs):
-    #     response = {'message': 'not able to update through this method'}
-    #     return Response(response, status=status.HTTP_400_BAD_REQUEST)
-    #
-    # def create(self, request, *args, **kwargs):
-    #     response = {'message': 'not able to create through this method'}
-    #     return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=False, methods=['POST'])
+    def get_shipping_rating(self, request):
+        if 'shipping' in request.data:
+            ratings = Rating.objects.filter(shipping=request.data['shipping'])
+            serializer = RatingSerializer(ratings, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'shipping': 'Este campo é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChatViewSet(viewsets.ModelViewSet):

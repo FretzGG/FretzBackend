@@ -181,9 +181,9 @@ class Auction(models.Model):
 class Rating(models.Model):
     profile_evaluator = models.ForeignKey(Profile, related_name='profile_evaluator', on_delete=models.CASCADE)
     profile_evaluated = models.ForeignKey(Profile, related_name='profile_evaluated', on_delete=models.CASCADE)
-    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE, default='')
+    shipping = models.ForeignKey(Shipping, on_delete=models.CASCADE)
 
-    rating_date_time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    date = models.DateField(auto_now_add=True, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     stars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
 
